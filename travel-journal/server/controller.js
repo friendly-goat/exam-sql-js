@@ -25,17 +25,21 @@ module.exports = {
         const { name,rating,countryId } = req.body
         sequelize.query(`
             INSERT INTO cities(name,rating,country_id)
-            values('${name}',${rating},${countryId})
-            RETURNING *;
+            values('${name}',${rating},${countryId});
         `)
         .then(dbRes => res.status(200).send(dbRes[0]))
         .catch(err => console.log(err))
     },
     getCities: (req,res) => {
+        // sequelize.query(`
+        //     SELECT city.city_id,city.name,city.rating from cities city
+        //     JOIN countries countries on city.city_id = countries.country_id;
+        // `)
         sequelize.query(`
-            SELECT c.city_id,c.name,u.name,c.rating from cities c
-            JOIN countries u on c.city_id = u.country_id;
-        `)
+        SELECT ci.city_id,ci.name AS city,ci.rating,co.country_id,co.name AS country
+            FROM cities AS ci
+                JOIN countries AS co ON ci.country_id=co.country_id;
+    `)
         .then(dbRes => res.status(200).send(dbRes[0]))
         .catch(err => console.log(err))
     },
